@@ -24,3 +24,11 @@ libraries {
 binaries.withType(TestSuiteExecutableBinary) {
     lib library: "cunit", linkage: "static"
 }
+
+task unitTest
+binaries.withType(TestSuiteExecutableBinary) {
+    if (it.buildable) {
+        // TODO: This should be it.tasks.run
+        unitTest.dependsOn it.namingScheme.getTaskName("run")
+    }
+}
