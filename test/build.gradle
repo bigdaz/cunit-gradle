@@ -11,7 +11,8 @@ model {
             cunit {
                 headers.srcDir "${cunitDir}/headers"
                 binaries.withType(StaticLibraryBinary) { binary ->
-                    binary.staticLibraryFile = file("${cunitDir}/lib/cunitStaticLibrary/${binary.targetPlatform.name}/libcunit.a")
+                    def libName = binary.targetPlatform.operatingSystem.windows ? "cunit.lib" : "libcunit.a"
+                    binary.staticLibraryFile = file("${cunitDir}/lib/cunitStaticLibrary/${binary.targetPlatform.name}/${libName}")
                 }
             }
         }
@@ -28,7 +29,7 @@ binaries.withType(TestSuiteExecutableBinary) {
 task unitTest
 binaries.withType(TestSuiteExecutableBinary) {
     if (it.buildable) {
-        // TODO: This should be it.tasks.run
+        // TODO: This should be it.tasks.run, which should use the install image of the test exe
         unitTest.dependsOn it.namingScheme.getTaskName("run")
     }
 }
