@@ -44,3 +44,63 @@ task publish(type: Copy) {
         into "lib"
     }
 }
+
+
+// Everything below here is required to publish a library that can be used by 
+// multiple toolchains on multiple operating systems. It's a bit ugly...
+model {
+    toolChains {
+        visualCpp(VisualCpp)
+        mingw(Gcc) {
+            path new File("C:/MinGW/bin")
+            addPlatformConfiguration(new MinGWPlatformConfiguration())
+        }
+        cygwin(Gcc) {
+            path new File("C:/cygwin/bin")
+            addPlatformConfiguration(new CygwinPlatformConfiguration())
+        }
+        gcc(Gcc)
+        clang(Clang)
+    }
+    platforms {
+        win {
+            operatingSystem "windows"
+        }
+        mingw {
+            operatingSystem "windows"
+            architecture "sparc"
+        }
+        cygwin {
+            operatingSystem "windows"
+            architecture "sparc"
+        }
+        osx {
+            operatingSystem "osx"
+        }
+        linux {
+            operatingSystem "linux"
+        }
+    }
+}
+
+abstract class AbstractPlatformConfiguration implements TargetPlatformConfiguration {
+    List<String> cppCompilerArgs = []
+    List<String> CCompilerArgs = []
+    List<String> objectiveCCompilerArgs = []
+    List<String> objectiveCppCompilerArgs = []
+    List<String> assemblerArgs = []
+    List<String> linkerArgs = []
+    List<String> staticLibraryArchiverArgs = []
+}
+
+class MinGWPlatformConfiguration extends AbstractPlatformConfiguration {
+    boolean supportsPlatform(Platform platform) {
+        return platform.name == "mingw"
+    }
+}
+
+class CygwinPlatformConfiguration extends AbstractPlatformConfiguration {
+    boolean supportsPlatform(Platform platform) {
+        return platform.name == "cygwin"
+    }
+}
