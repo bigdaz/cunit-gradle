@@ -1,0 +1,25 @@
+apply plugin: "c"
+apply plugin: "cunit"
+
+def cunitDir = "../publish"
+
+model {
+    repositories {
+        libs(PrebuiltLibraries) {
+            cunit {
+                headers.srcDir "${cunitDir}/headers"
+                binaries.withType(StaticLibraryBinary) {
+                    staticLibraryFile = file("${cunitDir}/lib/cunitStaticLibrary/libcunit.a")
+                }
+                println headers.srcDirs
+            }
+        }
+    }
+}
+
+libraries {
+    math {}
+}
+binaries.withType(TestSuiteExecutableBinary) {
+    lib library: "cunit", linkage: "static"
+}

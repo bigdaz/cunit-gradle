@@ -36,7 +36,7 @@ task buildStaticLibs {
 task publish(type: Copy) {
     dependsOn extractCUnit
     dependsOn buildStaticLibs
-    into "publish"
+    into "../publish"
     from("${genSrc}/CUnit-2.1-2/CUnit/Headers") {
         into "headers/CUnit"
     }
