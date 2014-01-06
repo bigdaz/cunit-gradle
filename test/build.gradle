@@ -1,6 +1,8 @@
 apply plugin: "c"
 apply plugin: "cunit"
 
+apply from: "../cunit/platform-config.gradle"
+
 def cunitDir = "../publish"
 
 model {
@@ -8,10 +10,9 @@ model {
         libs(PrebuiltLibraries) {
             cunit {
                 headers.srcDir "${cunitDir}/headers"
-                binaries.withType(StaticLibraryBinary) {
-                    staticLibraryFile = file("${cunitDir}/lib/cunitStaticLibrary/libcunit.a")
+                binaries.withType(StaticLibraryBinary) { binary ->
+                    binary.staticLibraryFile = file("${cunitDir}/lib/cunitStaticLibrary/${binary.targetPlatform.name}/libcunit.a")
                 }
-                println headers.srcDirs
             }
         }
     }
