@@ -17,6 +17,7 @@ model {
     platforms {
         win {
             operatingSystem "windows"
+            architecture "x86"
         }
         mingw {
             operatingSystem "windows"
@@ -28,9 +29,11 @@ model {
         }
         osx {
             operatingSystem "osx"
+            architecture "x86"
         }
         linux {
             operatingSystem "linux"
+            architecture "x86"
         }
     }
 }
