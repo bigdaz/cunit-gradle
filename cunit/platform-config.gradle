@@ -1,15 +1,13 @@
-// Everything here is required to publish a library that can be used by
-// multiple toolchains on multiple operating systems. It's a bit ugly...
 model {
     toolChains {
         visualCpp(VisualCpp)
         mingw(Gcc) {
             path new File("C:/MinGW/bin")
-            addPlatformConfiguration(new MinGWPlatformConfiguration())
+            target("mingw")
         }
         cygwin(Gcc) {
             path new File("C:/cygwin/bin")
-            addPlatformConfiguration(new CygwinPlatformConfiguration())
+            target("cygwin")
         }
         gcc(Gcc)
         clang(Clang)
@@ -36,26 +34,11 @@ model {
             architecture "x86"
         }
     }
-}
-
-abstract class AbstractPlatformConfiguration implements TargetPlatformConfiguration {
-    List<String> cppCompilerArgs = []
-    List<String> CCompilerArgs = []
-    List<String> objectiveCCompilerArgs = []
-    List<String> objectiveCppCompilerArgs = []
-    List<String> assemblerArgs = []
-    List<String> linkerArgs = []
-    List<String> staticLibraryArchiverArgs = []
-}
-
-class MinGWPlatformConfiguration extends AbstractPlatformConfiguration {
-    boolean supportsPlatform(Platform platform) {
-        return platform.name == "mingw"
-    }
-}
-
-class CygwinPlatformConfiguration extends AbstractPlatformConfiguration {
-    boolean supportsPlatform(Platform platform) {
-        return platform.name == "cygwin"
+    components {
+        all {
+            ["win", "mingw", "cygwin", "osx", "linux"].each {
+                targetPlatform it
+            }
+        }
     }
 }
