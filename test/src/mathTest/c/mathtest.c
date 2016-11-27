@@ -1,5 +1,5 @@
-#include <CUnit/Basic.h>
 #include "math.h"
+#include <CUnit/Basic.h>
 
 int init_mathtest(void) {
 	return 0;

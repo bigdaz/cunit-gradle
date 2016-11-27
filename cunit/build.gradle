@@ -10,39 +10,46 @@ task extractCUnit(type: Copy) {
     exclude "**/Makefile*"
 }
 
-sources {
-    cunit {
-        c {
-            source {
-                srcDir "${genSrc}/CUnit-2.1-2/CUnit/Sources"
-                exclude "**/Curses/*"
-                exclude "**/Test/*"
-                exclude "**/Win/*"
+model {
+    components {
+        cunit(NativeLibrarySpec) {
+            sources {
+                c {
+                    source {
+                        srcDir "${genSrc}/CUnit-2.1-2/CUnit/Sources"
+                        exclude "**/Curses/*"
+                        exclude "**/Test/*"
+                        exclude "**/Win/*"
+                    }
+                    exportedHeaders {
+                        srcDir "${genSrc}/CUnit-2.1-2/CUnit/Headers"
+                    }
+                    builtBy tasks.extractCUnit
+                }
             }
-            exportedHeaders {
-                srcDir "${genSrc}/CUnit-2.1-2/CUnit/Headers"
+        }
+    }
+    tasks {
+        buildStaticLibs(Task) {
+            dependsOn $.binaries.withType(StaticLibraryBinarySpec).findAll {
+                it.buildable
             }
-            builtBy tasks.extractCUnit
+        }
+        publish(Copy) {
+            dependsOn "extractCUnit"
+            dependsOn "buildStaticLibs"
+            group "Publication"
+            into "../publish"
+            from("${genSrc}/CUnit-2.1-2/CUnit/Headers") {
+                into "headers/CUnit"
+				// This file is excluded as it was patch to fix issue:
+				// https://sourceforge.net/p/cunit/bugs/71/
+				exclude "CUnit.h"
+            }
+            from("${buildDir}/libs") {
+                into "lib"
+            }
         }
     }
 }
-libraries {
-    cunit {}
-}
 
-task buildStaticLibs {
-    dependsOn binaries.withType(StaticLibraryBinary).matching {
-        it.buildable
-    }
-}
-task publish(type: Copy) {
-    dependsOn extractCUnit
-    dependsOn buildStaticLibs
-    into "../publish"
-    from("${genSrc}/CUnit-2.1-2/CUnit/Headers") {
-        into "headers/CUnit"
-    }
-    from("${buildDir}/binaries") {
-        into "lib"
-    }
-}
